@@ -31,5 +31,5 @@ RUN mkdir -p data models notebooks documents
 # Expose Streamlit port
 EXPOSE 8501
 
-# Run Streamlit application
-CMD ["streamlit", "run", "ui/app.py"]
+# Run Streamlit application with server settings
+CMD ["streamlit", "run", "ui/app.py", "--server.port=8501", "--server.address=0.0.0.0"]

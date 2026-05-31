@@ -2,6 +2,89 @@
 
 A comprehensive credit risk assessment platform that combines machine learning, explainable AI, and natural language processing to provide intelligent loan default predictions and data insights.
 
+## 🚀 Quick Start
+
+### Option 1: Docker (Recommended)
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/sksaleenagrace/AI-Powered-Credit-Risk-Intelligence-Platform.git
+   cd AI-Powered-Credit-Risk-Intelligence-Platform
+   ```
+
+2. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env and add your GROQ_API_KEY
+   # Get your API key from: https://console.groq.com/keys
+   ```
+
+3. **Run with Docker Compose**
+   ```bash
+   docker-compose up --build
+   ```
+
+4. **Access the application**
+   Open your browser and navigate to: http://localhost:8501
+
+### Option 2: Local Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/sksaleenagrace/AI-Powered-Credit-Risk-Intelligence-Platform.git
+   cd AI-Powered-Credit-Risk-Intelligence-Platform
+   ```
+
+2. **Create virtual environment**
+   ```bash
+   python -m venv venv
+   # Windows:
+   venv\Scripts\activate
+   # Linux/Mac:
+   source venv/bin/activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env and add your GROQ_API_KEY
+   # Get your API key from: https://console.groq.com/keys
+   ```
+
+5. **Run the application**
+   ```bash
+   streamlit run ui/app.py
+   ```
+
+6. **Access the application**
+   Open your browser and navigate to: http://localhost:8501
+
+### Demo Mode
+
+The application includes a demo mode that works with a sample dataset (1000 rows) and pre-trained model. No additional setup required - just run the application and it will automatically use the demo data if the full dataset is not available.
+
+### Full Dataset (Optional)
+
+For full functionality with the complete dataset:
+
+1. Download the Home Credit Default Risk dataset from Kaggle:
+   https://www.kaggle.com/competitions/home-credit-default-risk/data
+
+2. Place `application_train.csv` in the `data/` folder
+
+3. Run the preprocessing pipeline:
+   ```bash
+   python src/preprocess.py
+   python src/train.py
+   python src/explain.py
+   python src/eda.py
+   ```
+
 ## 🏦 Project Overview
 
 This platform uses LightGBM for loan default prediction, SHAP for model explainability, and Groq API for a conversational "Talk-to-Data" chatbot. The entire application is containerized with Docker and deployed via Docker Compose.

@@ -13,8 +13,10 @@ services:
       - ./models:/app/models
       - ./notebooks:/app/notebooks
       - ./documents:/app/documents
+    env_file:
+      - .env
     environment:
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]

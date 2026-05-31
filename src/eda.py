@@ -18,9 +18,31 @@ plt.rcParams['font.size'] = 12
 
 def load_data():
     """Load the training dataset"""
-    data_path = Path(__file__).parent.parent / "data" / "application_train.csv"
-    df = pd.read_csv(data_path)
-    return df
+    data_dir = Path(__file__).parent.parent / "data"
+    
+    # Try to load full dataset first
+    data_path = data_dir / "application_train.csv"
+    if data_path.exists():
+        df = pd.read_csv(data_path)
+        print(f"✓ Loaded full dataset: {len(df)} rows")
+        return df
+    
+    # Try to load sample dataset for demo mode
+    sample_path = data_dir / "sample_data.csv"
+    if sample_path.exists():
+        df = pd.read_csv(sample_path)
+        print(f"⚠ Full dataset not found. Using sample dataset for demo: {len(df)} rows")
+        print(f"⚠ For full functionality, download dataset from:")
+        print(f"   https://www.kaggle.com/competitions/home-credit-default-risk/data")
+        print(f"   Place application_train.csv in the data/ folder")
+        return df
+    
+    # No dataset found
+    print("❌ ERROR: No dataset found!")
+    print("Please download the dataset from:")
+    print("   https://www.kaggle.com/competitions/home-credit-default-risk/data")
+    print("Place application_train.csv in the data/ folder")
+    raise FileNotFoundError("Dataset not found. Please download from Kaggle and place in data/ folder.")
 
 
 def print_dataset_summary(df):

@@ -24,6 +24,20 @@ def load_model_and_data():
     models_dir = Path(__file__).parent.parent / "models"
     data_dir = Path(__file__).parent.parent / "data"
     
+    # Check if model exists
+    if not (models_dir / "lgbm_model.pkl").exists():
+        print("❌ ERROR: Trained model not found!")
+        print("Please train the model first:")
+        print("  python src/train.py")
+        raise FileNotFoundError("Model not found. Run training first.")
+    
+    # Check if test data exists
+    if not (data_dir / "X_test.csv").exists() or not (data_dir / "y_test.csv").exists():
+        print("❌ ERROR: Test data files not found!")
+        print("Please run preprocessing first:")
+        print("  python src/preprocess.py")
+        raise FileNotFoundError("Test data not found. Run preprocessing first.")
+    
     # Load model
     with open(models_dir / "lgbm_model.pkl", 'rb') as f:
         model = pickle.load(f)

@@ -347,19 +347,63 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
+# ==================== HELPER FUNCTIONS ====================
+def load_data_with_demo_mode():
+    """Load data with demo mode fallback"""
+    data_dir = Path(__file__).parent.parent / "data"
+    
+    # Try to load full dataset first
+    data_path = data_dir / "application_train.csv"
+    if data_path.exists():
+        df = pd.read_csv(data_path)
+        return df, False  # False = not demo mode
+    
+    # Try to load sample dataset for demo mode
+    sample_path = data_dir / "sample_data.csv"
+    if sample_path.exists():
+        df = pd.read_csv(sample_path)
+        return df, True  # True = demo mode
+    
+    # No dataset found
+    return None, False
+
+
+def load_model_with_demo_mode():
+    """Load model with demo mode fallback"""
+    models_dir = Path(__file__).parent.parent / "models"
+    
+    # Check if model exists
+    if (models_dir / "lgbm_model.pkl").exists():
+        with open(models_dir / "lgbm_model.pkl", 'rb') as f:
+            model = pickle.load(f)
+        return model, False  # False = not demo mode
+    
+    return None, False
+
+
+def check_chart_exists(chart_name):
+    """Check if a pre-generated chart exists"""
+    chart_path = Path(__file__).parent.parent / "notebooks" / chart_name
+    return chart_path.exists()
+
+
 # ==================== PAGE 1: EDA DASHBOARD ====================
 def eda_dashboard():
     st.markdown('<h1 class="main-header">📊 EDA Dashboard</h1>', unsafe_allow_html=True)
     
-    # Load data
-    data_path = Path(__file__).parent.parent / "data" / "application_train.csv"
+    # Load data with demo mode
+    df, is_demo = load_data_with_demo_mode()
     
-    if not data_path.exists():
-        st.error("🚫 Data file not found. Please run src/preprocess.py first.")
+    if df is None:
+        st.error("🚫 No dataset found. Please download the dataset from Kaggle or use the included sample data.")
+        st.info("📥 Download from: https://www.kaggle.com/competitions/home-credit-default-risk/data")
         return
     
+    if is_demo:
+        st.warning("⚠️ Demo Mode: Using sample dataset (1000 rows). For full functionality, download the complete dataset.")
+    
     with st.spinner("🔄 Loading data..."):
-        df = pd.read_csv(data_path)
+        pass  # Data already loaded
     
     # Dataset Summary - Big Metric Cards
     st.markdown('<h2 class="subheader">📈 Dataset Summary</h2>', unsafe_allow_html=True)
@@ -493,18 +537,24 @@ def eda_dashboard():
 def risk_prediction():
     st.markdown('<h1 class="main-header">🎯 Risk Prediction</h1>', unsafe_allow_html=True)
     
-    # Load model and preprocessing artifacts
-    model_path = Path(__file__).parent.parent / "models" / "lgbm_model.pkl"
+    # Load model with demo mode
+    model, is_demo = load_model_with_demo_mode()
+    
+    if model is None:
+        st.error("🚫 Model not found. Please run src/train.py first.")
+        st.info("💡 Demo mode requires a pre-trained model. The model should be in the models/ folder.")
+        return
+    
+    if is_demo:
+        st.warning("⚠️ Demo Mode: Using pre-trained model.")
+    
+    # Load preprocessing artifacts
     feature_names_path = Path(__file__).parent.parent / "data" / "feature_names.pkl"
     metrics_path = Path(__file__).parent.parent / "models" / "metrics.json"
     
-    if not model_path.exists() or not feature_names_path.exists():
-        st.error("🚫 Model not found. Please run src/train.py first.")
+    if not feature_names_path.exists():
+        st.error("🚫 Feature names not found. Please run src/preprocess.py first.")
         return
-    
-    # Load model
-    with open(model_path, 'rb') as f:
-        model = pickle.load(f)
     
     # Load feature names
     with open(feature_names_path, 'rb') as f:
@@ -776,13 +826,45 @@ def get_risk_color(score):
 def shap_explanation():
     st.markdown('<h1 class="main-header">🔍 SHAP Explanation</h1>', unsafe_allow_html=True)
     
+    # Load model with demo mode
+    model, is_demo = load_model_with_demo_mode()
+    
+    if model is None:
+        st.error("🚫 Model not found. Please run src/train.py first.")
+        st.info("💡 Displaying pre-generated SHAP charts if available.")
+    
+    if is_demo:
+        st.warning("⚠️ Demo Mode: Using pre-trained model.")
+    
     # Load explainer and data
     explainer_path = Path(__file__).parent.parent / "notebooks" / "shap_explainer.pkl"
     feature_importance_path = Path(__file__).parent.parent / "models" / "feature_importance.csv"
     
-    if not explainer_path.exists():
-        st.warning("⚠️ SHAP explainer not found. Run src/explain.py to generate.")
-        return
+    # Display pre-generated charts
+    notebooks_dir = Path(__file__).parent.parent / "notebooks"
+    shap_charts = [
+        ("SHAP Summary Plot", "shap_summary_plot.png"),
+        ("SHAP Feature Importance", "shap_feature_importance.png"),
+        ("SHAP Waterfall Sample", "shap_waterfall_sample_0.png")
+    ]
+    
+    st.markdown('<h2 class="subheader">📊 Pre-Generated SHAP Charts</h2>', unsafe_allow_html=True)
+    
+    charts_found = False
+    for chart_name, chart_file in shap_charts:
+        chart_path = notebooks_dir / chart_file
+        if chart_path.exists():
+            charts_found = True
+            with st.container():
+                st.markdown(f'''
+                <div class="chart-container">
+                    <h3 style="color: #00D4FF; margin-top: 0;">📈 {chart_name}</h3>
+                </div>
+                ''', unsafe_allow_html=True)
+                st.image(str(chart_path), use_container_width=True)
+    
+    if not charts_found:
+        st.warning("⚠️ No pre-generated SHAP charts found. Run src/explain.py to generate.")
     
     # Load feature importance
     if feature_importance_path.exists():
@@ -872,6 +954,17 @@ def talk_to_data():
     
     st.markdown('<h2 class="subheader">🤖 Ask questions about the credit risk data in plain English</h2>', unsafe_allow_html=True)
     
+    # Load data with demo mode
+    df, is_demo = load_data_with_demo_mode()
+    
+    if df is None:
+        st.error("🚫 No dataset found. Please download the dataset from Kaggle or use the included sample data.")
+        st.info("📥 Download from: https://www.kaggle.com/competitions/home-credit-default-risk/data")
+        return
+    
+    if is_demo:
+        st.warning("⚠️ Demo Mode: Using sample dataset (1000 rows). Chatbot will answer based on this limited data.")
+    
     # Load environment variables
     from dotenv import load_dotenv
     load_dotenv()
@@ -880,6 +973,7 @@ def talk_to_data():
     
     if not api_key:
         st.error("🚫 GROQ_API_KEY not found in .env file. Please add it.")
+        st.info("💡 Get your API key from: https://console.groq.com/keys")
         return
     
     # Initialize chat history

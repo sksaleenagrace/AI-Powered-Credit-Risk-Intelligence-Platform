@@ -17,6 +17,17 @@ warnings.filterwarnings('ignore')
 def load_processed_data():
     data_dir = Path(__file__).parent.parent / "data"
     
+    # Check if processed files exist
+    required_files = ["X_train.csv", "X_test.csv", "y_train.csv", "y_test.csv", "scale_pos_weight.pkl"]
+    missing_files = [f for f in required_files if not (data_dir / f).exists()]
+    
+    if missing_files:
+        print("❌ ERROR: Processed data files not found!")
+        print(f"Missing files: {', '.join(missing_files)}")
+        print("Please run preprocessing first:")
+        print("  python src/preprocess.py")
+        raise FileNotFoundError("Processed data files not found. Run preprocessing first.")
+    
     X_train = pd.read_csv(data_dir / "X_train.csv")
     X_test = pd.read_csv(data_dir / "X_test.csv")
     y_train = pd.read_csv(data_dir / "y_train.csv").squeeze("columns")
