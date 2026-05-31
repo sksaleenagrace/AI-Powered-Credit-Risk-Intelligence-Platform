@@ -1,0 +1,25 @@
+{
+  "auc_roc": 0.7693927783493617,
+  "accuracy": 0.7152496626180836,
+  "precision": 0.17542679772374548,
+  "recall": 0.682980866062437,
+  "f1_score": 0.27915208890718257,
+  "specificity": 0.7180834129258198,
+  "confusion_matrix": {
+    "true_negatives": 40599,
+    "false_positives": 15939,
+    "false_negatives": 1574,
+    "true_positives": 3391
+  },
+  "risk_score_distribution": {
+    "mean": 39.274939229625595,
+    "std": 21.31829505860487,
+    "min": 1.1649775359194479,
+    "max": 93.13719666426744
+  },
+  "risk_band_distribution": {
+    "low": 24527,
+    "medium": 24567,
+    "high": 12409
+  }
+}

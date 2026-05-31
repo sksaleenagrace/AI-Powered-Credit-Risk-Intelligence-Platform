@@ -1,0 +1,33 @@
+# Environment variables
+.env
+
+# Virtual environments
+venv/
+venvv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Model and data files
+*.pkl
+*.db
+
+# Data files
+data/application_train.csv
+data/application_test.csv
+data/X_train.csv
+data/X_test.csv
+data/y_train.csv
+data/y_test.csv
+data/bureau.csv
+data/bureau_balance.csv
+data/credit_card_balance.csv
+data/installments_payments.csv
+data/previous_application.csv
+data/HomeCredit_columns_description.csv
+data/POS_CASH_balance.csv
+data/sample_submission.csv
+
+# macOS
+.DS_Store
